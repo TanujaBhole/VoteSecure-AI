@@ -107,6 +107,6 @@ VoteSecure-AI/
 
 **Tanuja Bhole**
 
-"Building intelligent, secure, and scalable AI systems that redefine the future of digital governance."
+Building intelligent, secure, and scalable AI systems that redefine the future of digital governance.
 ---
 
