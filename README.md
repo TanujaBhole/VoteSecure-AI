@@ -107,8 +107,6 @@ VoteSecure-AI/
 
 **Tanuja Bhole**
 
-> *Building secure AI solutions for the future of digital democracy.*
-
+"Building intelligent, secure, and scalable AI systems that redefine the future of digital governance."
 ---
 
-⭐ If you like this project, don't forget to **Star** the repository.
