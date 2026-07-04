@@ -1,0 +1,6 @@
+.env
+voting.db
+face_data/
+__pycache__/
+*.pyc
+venv/git rm --cached .env
