@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <a href="{{ url_for('admin_dashboard') }}"><i class="ph ph-squares-four"></i> Overview</a>
+    <a href="{{ url_for('manage_elections') }}" class="active"><i class="ph ph-ballot"></i> Elections</a>
+    <a href="{{ url_for('manage_users') }}"><i class="ph ph-users"></i> Users</a>
+    <a href="{{ url_for('security_logs') }}"><i class="ph ph-shield-warning"></i> Security Logs</a>
+</div>
+
+<div class="admin-content fade-in">
+    <h2 class="mb-4" style="font-size: 2.5rem;"><i class="ph-fill ph-pencil-simple" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Edit Election</h2>
+    
+    <a href="{{ url_for('manage_elections') }}" style="color: var(--text-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; transition: background 0.3s;"><i class="ph ph-arrow-left"></i> Back to Elections</a>
+
+    <div class="glass-panel">
+        <form method="POST" action="{{ url_for('edit_election', election_id=election.id) }}">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" class="form-control" value="{{ election.title }}" required>
+            </div>
+            <div class="form-group">
+                <label>Election Code</label>
+                <input type="text" name="code" class="form-control" value="{{ election.code }}" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="2">{{ election.description }}</textarea>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <input type="datetime-local" name="start_time" class="form-control" value="{{ election.start_time.strftime('%Y-%m-%dT%H:%M') }}" required style="color-scheme: dark;">
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="datetime-local" name="end_time" class="form-control" value="{{ election.end_time.strftime('%Y-%m-%dT%H:%M') }}" required style="color-scheme: dark;">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="ph ph-check" style="margin-right: 0.5rem;"></i> Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

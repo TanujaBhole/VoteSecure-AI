@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="glass-panel text-center" style="margin-top: 4rem; padding: 5rem 2rem; border-radius: 30px;">
+    <div style="font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem;"><i class="ph-fill ph-fingerprint"></i></div>
+    <h1 style="font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary-color), var(--text-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;">VoteSecure AI</h1>
+    <p style="font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.6;">
+        A state-of-the-art secure online voting platform powered by spatial computing aesthetics and AI Fraud Detection.
+    </p>
+    {% if not current_user.is_authenticated %}
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{{ url_for('register') }}" class="btn btn-primary"><i class="ph ph-rocket-launch" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Get Started</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline"><i class="ph ph-sign-in" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Login</a>
+        </div>
+    {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary"><i class="ph ph-squares-four" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Go to Dashboard</a>
+    {% endif %}
+</div>
+
+<div class="grid" style="margin-top: 4rem;">
+    <div class="card text-center">
+        <i class="ph ph-shield-check" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; display: inline-block;"></i>
+        <h3 class="card-title">Secure & Transparent</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">End-to-end encryption ready architecture ensuring the integrity of every vote.</p>
+    </div>
+    <div class="card text-center">
+        <i class="ph ph-face-id" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 1rem; display: inline-block;"></i>
+        <h3 class="card-title">AI Powered Security</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">Advanced face verification preventing identity theft and voter fraud.</p>
+    </div>
+    <div class="card text-center">
+        <i class="ph ph-chart-line-up" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem; display: inline-block;"></i>
+        <h3 class="card-title">Real-time Analytics</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">Live monitoring of election turnout and results for administrators.</p>
+    </div>
+</div>
+{% endblock %}

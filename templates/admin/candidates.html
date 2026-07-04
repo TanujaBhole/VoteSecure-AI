@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <a href="{{ url_for('admin_dashboard') }}"><i class="ph ph-squares-four"></i> Overview</a>
+    <a href="{{ url_for('manage_elections') }}" class="active"><i class="ph ph-ballot"></i> Elections</a>
+    <a href="{{ url_for('manage_users') }}"><i class="ph ph-users"></i> Users</a>
+    <a href="{{ url_for('security_logs') }}"><i class="ph ph-shield-warning"></i> Security Logs</a>
+</div>
+
+<div class="admin-content fade-in">
+    <h2 class="mb-2" style="font-size: 2rem;"><i class="ph-fill ph-users-three" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Candidates for: {{ election.title }}</h2>
+    <a href="{{ url_for('manage_elections') }}" style="color: var(--text-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; transition: background 0.3s;"><i class="ph ph-arrow-left"></i> Back to Elections</a>
+    
+    <div class="grid">
+        <div class="glass-panel">
+            <h3><i class="ph ph-user-plus"></i> Add Candidate</h3>
+            <form method="POST" action="{{ url_for('manage_candidates', election_id=election.id) }}" class="mt-4">
+                <div class="form-group">
+                    <label>Candidate Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Party / Affiliation</label>
+                    <input type="text" name="party" class="form-control" placeholder="Political Party">
+                </div>
+                <div class="form-group">
+                    <label>Manifesto / Description</label>
+                    <textarea name="manifesto" class="form-control" rows="2" placeholder="Brief description..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="ph ph-plus" style="margin-right: 0.5rem;"></i> Add Candidate</button>
+            </form>
+        </div>
+
+        <div class="glass-panel">
+            <h3><i class="ph ph-chart-bar"></i> Live Results</h3>
+            {% if election.status == 'Closed' and results %}
+            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); padding: 1rem; border-radius: 12px; margin-top: 1rem; margin-bottom: 1.5rem;">
+                <h4 style="color: var(--success); margin-top: 0; margin-bottom: 0.5rem;"><i class="ph-fill ph-trophy"></i> Winner(s)</h4>
+                {% set max_votes = results | map(attribute='votes') | max %}
+                {% for r in results %}
+                    {% if r.votes == max_votes and max_votes > 0 %}
+                        <p style="margin-bottom: 0.2rem; font-size: 1.1rem; font-weight: bold; color: var(--text-primary);">{{ r.candidate.name }} <span style="font-size: 0.9rem; font-weight: normal; color: var(--text-secondary);">({{ r.candidate.party }})</span> with {{ r.votes }} votes!</p>
+                    {% endif %}
+                {% endfor %}
+                {% if max_votes == 0 %}
+                    <p style="margin-bottom: 0; font-size: 1rem; color: var(--text-secondary);">No votes cast in this election.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if results %}
+                <div class="mt-4">
+                {% for r in results %}
+                <div class="mb-4">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; font-size: 1.1rem;">{{ r.candidate.name }} <span style="font-size: 0.85rem; color: var(--text-secondary); background: rgba(255,255,255,0.05); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem;"><i class="ph-fill ph-flag"></i> {{ r.candidate.party }}</span></h4>
+                        <span style="font-weight: 700; color: var(--primary-color); font-size: 1.1rem;">{{ r.votes }} <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;">Votes</span> ({{ r.percent }}%)</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: {{ r.percent }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <p>No candidates added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

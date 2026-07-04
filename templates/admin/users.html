@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <a href="{{ url_for('admin_dashboard') }}"><i class="ph ph-squares-four"></i> Overview</a>
+    <a href="{{ url_for('manage_elections') }}"><i class="ph ph-ballot"></i> Elections</a>
+    <a href="{{ url_for('manage_users') }}" class="active"><i class="ph ph-users"></i> Users</a>
+    <a href="{{ url_for('security_logs') }}"><i class="ph ph-shield-warning"></i> Security Logs</a>
+</div>
+
+<div class="admin-content fade-in">
+    <h2 class="mb-4" style="font-size: 2.5rem;"><i class="ph-fill ph-users" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Registered Users</h2>
+    
+    <div class="table-container">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-user"></i> Name</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-identification-card"></i> Aadhaar</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-envelope-simple"></i> Email</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-check-circle"></i> Status</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-calendar-blank"></i> Reg Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); font-weight: 500;">{{ user.full_name }}</td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); color: var(--text-secondary);">{{ user.aadhaar[:4] }} **** ****</td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); color: var(--text-secondary);">{{ user.email }}</td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass);">
+                        {% if user.is_verified %}
+                            <span style="background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(0, 255, 136, 0.3);">Verified</span>
+                        {% else %}
+                            <span style="background: rgba(255, 170, 0, 0.1); color: var(--warning); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255, 170, 0, 0.3);">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); color: var(--text-secondary);">{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                </tr>
+                {% endfor %}
+                {% if not users %}
+                <tr><td colspan="5" class="text-center" style="padding: 2rem;">No users found.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

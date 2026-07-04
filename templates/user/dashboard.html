@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .winner-card {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 140, 0, 0.1) 100%);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+        border-radius: 20px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: glowPulse 3s infinite alternate;
+    }
+    
+    @keyframes glowPulse {
+        0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.15); }
+        100% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.4); }
+    }
+
+    .winner-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #ffd700;
+        margin-bottom: 1rem;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #ffd700;
+        opacity: 0;
+        animation: fall 3s ease-in infinite;
+    }
+
+    .confetti:nth-child(1) { left: 10%; animation-delay: 0s; background-color: #ff0055; }
+    .confetti:nth-child(2) { left: 20%; animation-delay: 0.5s; background-color: #00ff88; }
+    .confetti:nth-child(3) { left: 30%; animation-delay: 1s; background-color: #00f0ff; }
+    .confetti:nth-child(4) { left: 40%; animation-delay: 1.5s; background-color: #ffd700; }
+    .confetti:nth-child(5) { left: 50%; animation-delay: 0.2s; background-color: #ff0055; }
+    .confetti:nth-child(6) { left: 60%; animation-delay: 0.7s; background-color: #00ff88; }
+    .confetti:nth-child(7) { left: 70%; animation-delay: 1.2s; background-color: #00f0ff; }
+    .confetti:nth-child(8) { left: 80%; animation-delay: 1.7s; background-color: #ffd700; }
+    .confetti:nth-child(9) { left: 90%; animation-delay: 0.4s; background-color: #ff0055; }
+
+    @keyframes fall {
+        0% { top: -10%; opacity: 1; transform: rotate(0deg); }
+        100% { top: 110%; opacity: 0; transform: rotate(360deg); }
+    }
+    
+    .ranking-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+    
+    .ranking-row {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .ranking-row:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    .ranking-row.winner-row {
+        background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 140, 0, 0.05) 100%);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+    }
+    
+    .ranking-cell {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    
+    .ranking-row td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+    
+    .ranking-row td:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+    
+    .progress-bar-container {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: var(--primary-gradient);
+        border-radius: 4px;
+        transition: width 1s ease-out;
+    }
+    
+    .winner-row .progress-bar {
+        background: linear-gradient(90deg, #ffd700, #ff8c00);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-panel mb-4" style="display: flex; justify-content: space-between; align-items: center; border-radius: 20px;">
+    <div>
+        <h2 style="margin-top:0; color: var(--primary-color); font-size: 2rem;">Welcome, {{ current_user.full_name }}</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 0; font-size: 1.1rem;"><i class="ph ph-identification-card" style="margin-right: 0.5rem;"></i> Aadhaar: {{ current_user.aadhaar[:4] }} **** ****</p>
+    </div>
+    <div style="background: rgba(0, 240, 255, 0.1); padding: 1rem; border-radius: 50%; border: 1px solid rgba(0, 240, 255, 0.3);">
+        <i class="ph-fill ph-user-check" style="font-size: 3rem; color: var(--primary-color);"></i>
+    </div>
+</div>
+
+{% if election %}
+    {% if election.status == 'Closed' %}
+        <!-- Election Result Dashboard -->
+        <div class="glass-panel mb-4">
+            {% if winner %}
+                <div class="winner-card fade-in">
+                    <!-- Confetti effect -->
+                    <div class="confetti"></div><div class="confetti"></div><div class="confetti"></div>
+                    <div class="confetti"></div><div class="confetti"></div><div class="confetti"></div>
+                    <div class="confetti"></div><div class="confetti"></div><div class="confetti"></div>
+                    
+                    <span style="background: rgba(255, 215, 0, 0.2); color: #ffd700; padding: 0.4rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; border: 1px solid rgba(255, 215, 0, 0.4); display: inline-block; margin-bottom: 1rem;">
+                        <i class="ph-fill ph-check-circle"></i> Official Result Declared
+                    </span>
+                    
+                    <h2 style="color: #ffd700; font-size: 2.5rem; margin: 0 0 1.5rem 0; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">
+                        <i class="ph-fill ph-trophy"></i> Election Winner
+                    </h2>
+                    
+                    {% if winner.candidate.photo_filename %}
+                        <img src="{{ url_for('static', filename='uploads/candidates/' + winner.candidate.photo_filename) }}" class="winner-photo" alt="Winner Photo">
+                    {% else %}
+                        <div class="winner-photo" style="display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); font-size: 3rem;">
+                            <i class="ph ph-user"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <h1 style="margin: 0.5rem 0; font-size: 2.5rem;">{{ winner.candidate.name }}</h1>
+                    <h3 style="color: var(--text-secondary); margin: 0 0 1rem 0;">
+                        {{ winner.candidate.party }} 
+                        {% if winner.candidate.symbol_filename %}
+                            <img src="{{ url_for('static', filename='uploads/candidates/' + winner.candidate.symbol_filename) }}" style="height: 30px; vertical-align: middle; margin-left: 10px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));" alt="Symbol">
+                        {% endif %}
+                    </h3>
+                    
+                    <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                        <div style="background: rgba(0,0,0,0.3); padding: 1rem 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Total Votes</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #ffd700;">{{ winner.votes }}</div>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1rem 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Winning %</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #00ff88;">{{ winner.percent }}%</div>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1rem 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Status</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger); margin-top: 5px;"><i class="ph-fill ph-prohibit"></i> Closed</div>
+                        </div>
+                    </div>
+                </div>
+            {% elif tie %}
+                <div class="winner-card fade-in" style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%); border-color: rgba(0, 240, 255, 0.3);">
+                    <span style="background: rgba(0, 240, 255, 0.2); color: #00f0ff; padding: 0.4rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; border: 1px solid rgba(0, 240, 255, 0.4); display: inline-block; margin-bottom: 1rem;">
+                        <i class="ph-fill ph-check-circle"></i> Official Result Declared
+                    </span>
+                    <h2 style="color: #00f0ff; font-size: 2.5rem; margin: 0 0 1rem 0; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);">
+                        <i class="ph-fill ph-trophy"></i> Election Result: Tie
+                    </h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 2rem;">It's a tie between the following candidates with <strong>{{ tie_candidates[0].votes }}</strong> votes ({{ tie_candidates[0].percent }}%) each:</p>
+                    
+                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                        {% for t_cand in tie_candidates %}
+                            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 15px; border: 1px solid rgba(0, 240, 255, 0.2); min-width: 200px;">
+                                {% if t_cand.candidate.photo_filename %}
+                                    <img src="{{ url_for('static', filename='uploads/candidates/' + t_cand.candidate.photo_filename) }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #00f0ff; margin-bottom: 1rem;" alt="Photo">
+                                {% else %}
+                                    <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; border: 2px solid #00f0ff; margin-bottom: 1rem;">
+                                        <i class="ph ph-user"></i>
+                                    </div>
+                                {% endif %}
+                                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem;">{{ t_cand.candidate.name }}</h3>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">{{ t_cand.candidate.party }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="winner-card fade-in" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); box-shadow: none;">
+                    <h2 style="color: var(--text-secondary);"><i class="ph-fill ph-info"></i> No Votes Cast</h2>
+                    <p>No votes were recorded in this election.</p>
+                </div>
+            {% endif %}
+
+            <!-- Election Information -->
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="card" style="padding: 1.5rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Election Title</div>
+                    <div style="font-weight: 600; font-size: 1.1rem;">{{ election.title }}</div>
+                </div>
+                <div class="card" style="padding: 1.5rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Election Code</div>
+                    <div style="font-family: monospace; font-size: 1.2rem; color: var(--primary-color);">{{ election.code }}</div>
+                </div>
+                <div class="card" style="padding: 1.5rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Timeline</div>
+                    <div style="font-size: 0.9rem;"><i class="ph ph-calendar"></i> {{ election.start_time.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div style="font-size: 0.9rem;"><i class="ph ph-clock"></i> {{ election.end_time.strftime('%Y-%m-%d %H:%M') }}</div>
+                </div>
+                <div class="card" style="padding: 1.5rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Statistics</div>
+                    <div style="font-size: 0.9rem;">Candidates: <span style="font-weight: bold; color: var(--text-primary);">{{ results|length }}</span></div>
+                    <div style="font-size: 0.9rem;">Valid Votes: <span style="font-weight: bold; color: var(--success);">{{ total_valid_votes }}</span></div>
+                </div>
+            </div>
+
+            <!-- Complete Candidate Ranking -->
+            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-left: 4px solid var(--primary-color); padding-left: 1rem;">Complete Candidate Ranking</h3>
+            
+            <div style="overflow-x: auto;">
+                <table class="ranking-table">
+                    <tbody>
+                        {% for r in results %}
+                        <tr class="ranking-row {% if loop.index == 1 and winner %}winner-row{% endif %}">
+                            <td class="ranking-cell" style="width: 60px; text-align: center; font-size: 1.5rem; font-weight: bold; color: {% if loop.index == 1 %}#ffd700{% else %}var(--text-secondary){% endif %};">
+                                {% if loop.index == 1 and winner %}
+                                    <i class="ph-fill ph-trophy"></i>
+                                {% else %}
+                                    #{{ loop.index }}
+                                {% endif %}
+                            </td>
+                            <td class="ranking-cell" style="width: 80px;">
+                                {% if r.candidate.photo_filename %}
+                                    <img src="{{ url_for('static', filename='uploads/candidates/' + r.candidate.photo_filename) }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid {% if loop.index == 1 and winner %}#ffd700{% else %}rgba(255,255,255,0.2){% endif %};" alt="Photo">
+                                {% else %}
+                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                        <i class="ph ph-user"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="ranking-cell">
+                                <div style="font-weight: 600; font-size: 1.1rem; color: {% if loop.index == 1 and winner %}#ffd700{% else %}var(--text-primary){% endif %};">
+                                    {{ r.candidate.name }}
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; margin-top: 4px;">
+                                    {{ r.candidate.party }}
+                                    {% if r.candidate.symbol_filename %}
+                                        <img src="{{ url_for('static', filename='uploads/candidates/' + r.candidate.symbol_filename) }}" style="height: 16px;" alt="Symbol">
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="ranking-cell" style="width: 40%;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
+                                    <span><strong>{{ r.votes }}</strong> votes</span>
+                                    <span style="font-weight: bold; color: {% if loop.index == 1 and winner %}#ffd700{% else %}var(--primary-color){% endif %};">{{ r.percent }}%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: {{ r.percent }}%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 15px;">
+                <i class="ph-fill ph-hands-clapping" style="font-size: 2.5rem; color: #00ff88; margin-bottom: 1rem;"></i>
+                <h3 style="margin-top: 0; color: #00ff88;">Thank You</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 0; font-size: 1.1rem;">Thank you for participating in this election. Your vote helped strengthen democracy.</p>
+            </div>
+        </div>
+        
+    {% else %}
+        <!-- Active/Upcoming Election View -->
+        <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-left: 4px solid var(--primary-color); padding-left: 1rem;">Your Election</h3>
+        <div class="grid">
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h3 class="card-title" style="margin-bottom: 0;">{{ election.title }}</h3>
+                    {% if election.status == 'Live' %}
+                    <span style="background: rgba(0, 255, 136, 0.2); color: var(--success); padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(0, 255, 136, 0.3);"><i class="ph-fill ph-circle"></i> Live</span>
+                    {% elif election.status == 'Upcoming' %}
+                    <span style="background: rgba(255, 170, 0, 0.2); color: var(--warning); padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(255, 170, 0, 0.3);"><i class="ph-fill ph-clock"></i> Upcoming</span>
+                    {% endif %}
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; margin-top: 0;">
+                    <i class="ph ph-calendar"></i> Starts: {{ election.start_time.strftime('%Y-%m-%d %H:%M') }}<br>
+                    <i class="ph ph-clock"></i> Ends: {{ election.end_time.strftime('%Y-%m-%d %H:%M') }}
+                </p>
+                <p style="flex-grow: 1; color: var(--text-secondary); line-height: 1.6;">{{ election.description }}</p>
+                
+                <div style="margin-top: 1.5rem;">
+                    {% if has_voted %}
+                        <button class="btn btn-block" style="background: rgba(0, 255, 136, 0.1); color: var(--success); border: 1px solid var(--success); cursor: not-allowed;" disabled><i class="ph-fill ph-check-circle" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Voted Successfully</button>
+                    {% elif election.status == 'Live' %}
+                        <a href="{{ url_for('vote', election_id=election.id) }}" class="btn btn-primary btn-block"><i class="ph-fill ph-fingerprint" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Cast Your Vote</a>
+                    {% elif election.status == 'Upcoming' %}
+                        <button class="btn btn-block" style="background: rgba(255, 170, 0, 0.1); color: var(--warning); border: 1px solid var(--warning); cursor: not-allowed;" disabled><i class="ph-fill ph-clock" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Election Has Not Started</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+<div class="glass-panel text-center">
+    <p>No active election found.</p>
+</div>
+{% endif %}
+{% endblock %}

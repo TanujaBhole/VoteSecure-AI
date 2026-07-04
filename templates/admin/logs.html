@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <a href="{{ url_for('admin_dashboard') }}"><i class="ph ph-squares-four"></i> Overview</a>
+    <a href="{{ url_for('manage_elections') }}"><i class="ph ph-ballot"></i> Elections</a>
+    <a href="{{ url_for('manage_users') }}"><i class="ph ph-users"></i> Users</a>
+    <a href="{{ url_for('security_logs') }}" class="active"><i class="ph ph-shield-warning"></i> Security Logs</a>
+</div>
+
+<div class="admin-content fade-in">
+    <h2 class="mb-4" style="font-size: 2.5rem;"><i class="ph-fill ph-shield-check" style="color: var(--success); margin-right: 0.5rem;"></i> Security Logs</h2>
+    
+    <div class="table-container" style="max-height: 70vh; overflow-y: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="position: sticky; top: 0; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(10px); z-index: 1;">
+                <tr>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-clock"></i> Time</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-identification-badge"></i> User ID</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-activity"></i> Action</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-globe"></i> IP Address</th>
+                    <th style="padding: 1rem; border-bottom: 1px solid var(--border-glass);"><i class="ph ph-info"></i> Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); color: var(--text-secondary); white-space: nowrap;">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); font-family: monospace;">{{ log.user_id or 'System' }}</td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass);">
+                        {% if 'Fraud' in log.action or 'Failed' in log.action %}
+                            <span style="background: rgba(255, 0, 85, 0.1); color: var(--danger); padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255, 0, 85, 0.3);"><i class="ph-fill ph-warning-circle"></i> {{ log.action }}</span>
+                        {% else %}
+                            <span style="background: rgba(255, 255, 255, 0.05); padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--border-glass);">{{ log.action }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); font-family: monospace; color: var(--text-secondary);">{{ log.ip_address }}</td>
+                    <td style="padding: 1rem; border-bottom: 1px solid var(--border-glass); font-size: 0.9rem; color: var(--text-secondary);">{{ log.details or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

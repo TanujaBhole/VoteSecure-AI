@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Online Voting System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    {% block extra_css %}{% endblock %}
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <nav class="navbar slide-up">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <i class="ph-fill ph-fingerprint"></i> VoteSecure AI
+        </a>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin_dashboard') }}"><i class="ph ph-shield-check"></i> Admin Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('dashboard') }}"><i class="ph ph-squares-four"></i> Dashboard</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}"><i class="ph ph-sign-out"></i> Logout ({{ current_user.full_name }})</a>
+            {% else %}
+                <a href="{{ url_for('login') }}"><i class="ph ph-sign-in"></i> Login</a>
+                <a href="{{ url_for('register') }}"><i class="ph ph-user-plus"></i> Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container fade-in">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

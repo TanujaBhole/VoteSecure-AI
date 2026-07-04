@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <a href="{{ url_for('admin_dashboard') }}" class="active"><i class="ph ph-squares-four"></i> Overview</a>
+    <a href="{{ url_for('manage_elections') }}"><i class="ph ph-ballot"></i> Elections</a>
+    <a href="{{ url_for('manage_users') }}"><i class="ph ph-users"></i> Users</a>
+    <a href="{{ url_for('security_logs') }}"><i class="ph ph-shield-warning"></i> Security Logs</a>
+</div>
+
+<div class="admin-content fade-in">
+    <h2 class="mb-4" style="font-size: 2.5rem; color: var(--text-primary);"><i class="ph-fill ph-chart-polar" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Admin Analytics</h2>
+    
+    <div class="grid mb-4">
+        <div class="card stat-card">
+            <i class="ph-fill ph-users-three" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+            <h2>{{ total_users }}</h2>
+            <p>Total Registered Users</p>
+        </div>
+        <div class="card stat-card">
+            <i class="ph-fill ph-check-square-offset" style="font-size: 2.5rem; color: var(--success); margin-bottom: 1rem;"></i>
+            <h2>{{ total_votes }}</h2>
+            <p>Total Votes Cast</p>
+        </div>
+        <div class="card stat-card">
+            <i class="ph-fill ph-calendar-check" style="font-size: 2.5rem; color: var(--warning); margin-bottom: 1rem;"></i>
+            <h2>{{ active_elections }}</h2>
+            <p>Active Elections</p>
+        </div>
+        <div class="card stat-card">
+            <i class="ph-fill ph-trend-up" style="font-size: 2.5rem; color: var(--secondary-color); margin-bottom: 1rem;"></i>
+            <h2>{{ turnout }}%</h2>
+            <p>Estimated Voter Turnout</p>
+        </div>
+    </div>
+    
+    <div class="glass-panel" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3><i class="ph-fill ph-cpu" style="color: var(--text-secondary); margin-right: 0.5rem;"></i> System Status</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">All AI Security Modules and Database Connections are operating normally.</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <span class="btn" style="background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 0.5rem 1rem; border: 1px solid rgba(0, 255, 136, 0.2);"><i class="ph-fill ph-face-id"></i> Face Auth API: Online</span>
+            <span class="btn" style="background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 0.5rem 1rem; border: 1px solid rgba(0, 255, 136, 0.2);"><i class="ph-fill ph-shield-check"></i> Fraud Detection: Online</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

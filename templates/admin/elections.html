@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <a href="{{ url_for('admin_dashboard') }}"><i class="ph ph-squares-four"></i> Overview</a>
+    <a href="{{ url_for('manage_elections') }}" class="active"><i class="ph ph-ballot"></i> Elections</a>
+    <a href="{{ url_for('manage_users') }}"><i class="ph ph-users"></i> Users</a>
+    <a href="{{ url_for('security_logs') }}"><i class="ph ph-shield-warning"></i> Security Logs</a>
+</div>
+
+<div class="admin-content fade-in">
+    <h2 class="mb-4" style="font-size: 2.5rem;"><i class="ph-fill ph-ballot" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Manage Elections</h2>
+    
+    <div class="glass-panel mb-4">
+        <h3><i class="ph ph-plus-circle"></i> Create New Election</h3>
+        <form method="POST" action="{{ url_for('manage_elections') }}" class="mt-4">
+            <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="Election Title" required>
+                </div>
+                <div class="form-group">
+                    <label>Election Code</label>
+                    <input type="text" name="code" class="form-control" placeholder="Unique Code" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="2" placeholder="Brief description of the election..."></textarea>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <input type="datetime-local" name="start_time" class="form-control" required style="color-scheme: dark;">
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="datetime-local" name="end_time" class="form-control" required style="color-scheme: dark;">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="ph ph-check" style="margin-right: 0.5rem;"></i> Create Election</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h3 style="padding: 1.5rem 1.5rem 0.5rem; margin: 0;"><i class="ph ph-list-bullets"></i> All Elections</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Election Code</th>
+                    <th>Status</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for election in elections %}
+                <tr>
+                    <td>{{ election.title }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0,240,255,0.05); padding: 0.2rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-glass); width: fit-content;">
+                            <span style="font-family: monospace; font-weight: 600; color: var(--primary-color);">{{ election.code }}</span>
+                            <button onclick="navigator.clipboard.writeText('{{ election.code }}'); alert('Election Code copied to clipboard!');" style="padding: 0.2rem 0.4rem; border: none; background: transparent; color: var(--text-secondary); cursor: pointer;" title="Copy Code"><i class="ph ph-copy"></i></button>
+                        </div>
+                    </td>
+                    <td>
+                        {% if election.status == 'Live' %}
+                            <span style="background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(0, 255, 136, 0.3);">Live</span>
+                        {% elif election.status == 'Closed' %}
+                            <span style="background: rgba(255, 0, 85, 0.1); color: var(--danger); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255, 0, 85, 0.3);">Closed</span>
+                        {% else %}
+                            <span style="background: rgba(255, 170, 0, 0.1); color: var(--warning); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255, 170, 0, 0.3);">Upcoming</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: var(--text-secondary);"><i class="ph ph-clock"></i> {{ election.end_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('manage_candidates', election_id=election.id) }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-radius: 8px;" title="Candidates & Results"><i class="ph ph-users-three"></i> Candidates</a>
+                        <a href="{{ url_for('edit_election', election_id=election.id) }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-radius: 8px;" title="Edit"><i class="ph ph-pencil-simple"></i></a>
+                        {% if election.status != 'Live' %}
+                        <a href="{{ url_for('admin_election_action', action='activate', election_id=election.id) }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-radius: 8px; color: var(--success); border-color: var(--success);" title="Manually Activate"><i class="ph ph-play"></i></a>
+                        {% else %}
+                        <a href="{{ url_for('admin_election_action', action='close', election_id=election.id) }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-radius: 8px; color: var(--warning); border-color: var(--warning);" title="Manually Close"><i class="ph ph-stop"></i></a>
+                        {% endif %}
+                        <a href="{{ url_for('admin_election_action', action='delete', election_id=election.id) }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-radius: 8px; color: var(--danger); border-color: var(--danger);" onclick="return confirm('Are you sure you want to delete this election?');" title="Delete"><i class="ph ph-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

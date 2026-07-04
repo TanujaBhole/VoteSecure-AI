@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="glass-panel">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <i class="ph-fill ph-user-circle" style="font-size: 4rem; color: var(--primary-color);"></i>
+            <h2 style="margin-top:0.5rem; font-size: 2rem; color: var(--text-primary);">Welcome Back</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Log in with your Aadhaar to continue</p>
+        </div>
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="aadhaar"><i class="ph ph-identification-card"></i> Aadhaar Number</label>
+                <input type="text" id="aadhaar" name="aadhaar" class="form-control" placeholder="12-digit Aadhaar Number" required title="12 digit Aadhaar number">
+            </div>
+            <div class="form-group">
+                <label for="password"><i class="ph ph-lock-key"></i> Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <div class="form-group">
+                <label for="election_code"><i class="ph ph-hash"></i> Election Code</label>
+                <input type="text" id="election_code" name="election_code" class="form-control" placeholder="Enter Election Code (Required for Voters)">
+                <small style="color: var(--text-secondary); font-size: 0.8rem; display: block; margin-top: 0.3rem;">* Required to cast a vote. Admins may leave blank.</small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-4"><i class="ph ph-sign-in" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Secure Login</button>
+        </form>
+        <p class="text-center mt-4" style="color: var(--text-secondary); font-size: 0.9rem;">
+            Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

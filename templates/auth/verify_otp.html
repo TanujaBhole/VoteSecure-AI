@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="glass-panel">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <i class="ph-fill ph-envelope-open" style="font-size: 4rem; color: var(--warning);"></i>
+            <h2 style="margin-top:0.5rem; font-size: 2rem; color: var(--text-primary);">Email Verification</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Step 2: We've sent a 6-digit OTP to your email.</p>
+        </div>
+        <form method="POST" action="{{ url_for('verify_otp') }}">
+            <div class="form-group" style="text-align: center;">
+                <label style="text-align: left;"><i class="ph ph-password"></i> Enter Security Code</label>
+                <input type="text" name="otp" class="form-control" required maxlength="6" pattern="\d{6}" placeholder="------" style="text-align: center; font-size: 2rem; letter-spacing: 0.5em; font-weight: 700;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-4"><i class="ph ph-check-circle" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Verify & Continue</button>
+        </form>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('resend_otp') }}" class="btn btn-outline" style="font-size: 0.9rem;"><i class="ph ph-arrows-clockwise" style="margin-right: 0.5rem;"></i> Resend Code</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

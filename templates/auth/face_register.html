@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="glass-panel text-center">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <i class="ph-fill ph-face-id" style="font-size: 4rem; color: var(--success);"></i>
+            <h2 style="margin-top:0.5rem; font-size: 2rem; color: var(--text-primary);">Face Registration</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Step 3: Secure Biometric Setup</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('register_face') }}">
+            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: inline-block;">
+                <p id="camera-status" style="color: var(--success); margin: 0; font-weight: 500;"><i class="ph ph-spinner-gap ph-spin" style="margin-right: 0.5rem;"></i> Initializing Camera...</p>
+            </div>
+            
+            <div id="video-container">
+                <video id="video" autoplay playsinline></video>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5); pointer-events: none; border-radius: 50%;"></div>
+            </div>
+            
+            <input type="hidden" name="face_data" id="face_data" required>
+            
+            <button type="button" id="capture-btn" class="btn btn-primary btn-block mt-4" style="max-width: 350px; margin: 0 auto; font-size: 1.1rem; padding: 1rem;" disabled>
+                <i class="ph-fill ph-camera" style="margin-right: 0.5rem; font-size: 1.3rem;"></i> Capture & Complete Registration
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/face_auth.js') }}"></script>
+{% endblock %}

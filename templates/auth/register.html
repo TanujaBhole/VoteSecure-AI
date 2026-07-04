@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container" style="max-width: 600px;">
+    <div class="glass-panel">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <i class="ph-fill ph-user-plus" style="font-size: 4rem; color: var(--secondary-color);"></i>
+            <h2 style="margin-top:0.5rem; font-size: 2rem; color: var(--text-primary);">Voter Registration</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Step 1: Personal Information</p>
+        </div>
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label><i class="ph ph-user"></i> Full Name</label>
+                    <input type="text" name="full_name" class="form-control" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="ph ph-identification-card"></i> Aadhaar Number</label>
+                    <input type="text" name="aadhaar" pattern="\d{12}" class="form-control" placeholder="12-digit number" required title="12 digit Aadhaar number">
+                </div>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label><i class="ph ph-envelope-simple"></i> Email Address</label>
+                    <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="ph ph-phone"></i> Phone Number</label>
+                    <input type="text" name="phone" class="form-control" placeholder="+91..." required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="ph ph-map-pin"></i> Full Address</label>
+                <textarea name="address" class="form-control" rows="2" placeholder="Street address" required></textarea>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label><i class="ph ph-buildings"></i> City</label>
+                    <input type="text" name="city" class="form-control" placeholder="City name" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="ph ph-lock-key"></i> Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="8">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block mt-4"><i class="ph ph-paper-plane-right" style="margin-right: 0.5rem; font-size: 1.2rem;"></i> Register & Send OTP</button>
+        </form>
+        <p class="text-center mt-4" style="color: var(--text-secondary); font-size: 0.9rem;">
+            Already have an account? <a href="{{ url_for('login') }}" style="color: var(--secondary-color); font-weight: 600; text-decoration: none;">Login here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
